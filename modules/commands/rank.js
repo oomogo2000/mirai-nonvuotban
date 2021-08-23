@@ -14,6 +14,15 @@ module.exports.config = {
 		"canvas": ""
 	}
 };
+//random color 
+function getRandomColor() {
+  	var letters = '0123456789ABCDEF';
+ 	var color = '#';
+  	for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
 
 module.exports.makeRankCard = async (data) => {    
     /*
@@ -44,7 +53,7 @@ module.exports.makeRankCard = async (data) => {
 //random rankcard by Siêu Đáng Yêu ,png by ngô đức hiển(xin vui lòng giữ credit)
 	const pathCustom = path.resolve(__dirname, "cache", "customrank");
 	var customDir = fs.readdirSync(pathCustom);
-	let random = Math.floor(Math.random() * 22) + 1;
+	let random = Math.floor(Math.random() * 23) + 1;
 	    var dirImage = __root + "/rankcard" + random + ".png";
 
 
@@ -85,36 +94,36 @@ module.exports.makeRankCard = async (data) => {
 	ctx.drawImage(await Canvas.loadImage(avatar), 45, 50, 180, 180);
 
 	ctx.font = `bold 36px Manrope`;
-	ctx.fillStyle = "#FFFFFF";
+	ctx.fillStyle = getRandomColor();
 	ctx.textAlign = "start";
 	ctx.fillText(name, 270, 164);
 	ctx.font = `36px Manrope`;
-	ctx.fillStyle = "#FFFFFF";
+	ctx.fillStyle = getRandomColor();
 	ctx.textAlign = "center";
 
 	ctx.font = `bold 32px Manrope`;
-	ctx.fillStyle = "#FFFFFF";
+	ctx.fillStyle = getRandomColor();
 	ctx.textAlign = "end";
 	ctx.fillText(level, 934 - 55, 82);
-	ctx.fillStyle = "#FFFFFF";
+	ctx.fillStyle = getRandomColor();
 	ctx.fillText("Lv.", 934 - 55 - ctx.measureText(level).width - 10, 82);
 
 	ctx.font = `bold 32px Manrope`;
-	ctx.fillStyle = "#FFFFFF";
+	ctx.fillStyle = getRandomColor();
 	ctx.textAlign = "end";
 	ctx.fillText(rank, 934 - 55 - ctx.measureText(level).width - 16 - ctx.measureText(`Lv.`).width - 25, 82);
-	ctx.fillStyle = "#FFFFFF";
+	ctx.fillStyle = getRandomColor();
 	ctx.fillText("#", 934 - 55 - ctx.measureText(level).width - 16 - ctx.measureText(`Lv.`).width - 16 - ctx.measureText(rank).width - 16, 82);
 
 	ctx.font = `bold 26px Manrope`;
-	ctx.fillStyle = "#FFFFFF";
+	ctx.fillStyle = getRandomColor();
 	ctx.textAlign = "start";
 	ctx.fillText("/ " + expNextLevel, 710 + ctx.measureText(expCurrent).width + 10, 164);
-	ctx.fillStyle = "#FFFFFF";
+	ctx.fillStyle = getRandomColor();
 	ctx.fillText(expCurrent, 710, 164);
 
 	ctx.beginPath();
-	ctx.fillStyle = "#4283FF";
+	ctx.fillStyle = getRandomColor();
 	ctx.arc(257 + 18.5, 147.5 + 18.5 + 36.25, 18.5, 1.5 * PI, 0.5 * PI, true);
 	ctx.fill();
 	ctx.fillRect(257 + 18.5, 147.5 + 36.25, expWidth, 37.5);
