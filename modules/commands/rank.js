@@ -50,7 +50,7 @@ module.exports.makeRankCard = async (data) => {
 		weight: "bold",
 		style: "normal"
 	});
-//random rankcard by Siêu Đáng Yêu ,png by ngô đức hiển(xin vui lòng giữ credit)
+//random rankcard by Siêu Đáng Yêu ,png by ngô đức hiển(xin vui lòng giữ credit),code by quang thái
 	const pathCustom = path.resolve(__dirname, "cache", "customrank");
 	var customDir = fs.readdirSync(pathCustom);
 	let random = Math.floor(Math.random() * 23) + 1;
