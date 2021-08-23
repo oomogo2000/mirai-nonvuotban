@@ -1,21 +1,17 @@
 module.exports.config = {
 	name: "rank",
-	version: "1.0.3",
+	version: "1.0.0",
 	hasPermssion: 0,
-	credits: "CataliCS",
-	description: "Lấy rank hiện tại của bạn trên hệ thống bot, remake rank_card from canvacord",
-	commandCategory: "system",
-	cooldowns: 20,
+	credits: "Siêu Đáng Yêu",
+	description: "Lấy rank hiện tại của bạn trên hệ thống bot kèm khung theo level của bạn, remake rank_card from canvacord",
+	commandCategory: "Nhóm",
+	cooldowns: 5,
 	dependencies: {
 		"fs-extra": "",
 		"path": "",
 		"jimp": "",
 		"node-superfetch": "",
-		"canvas": "",
-		"@miraipr0ject/assets": ""
-	},
-	envConfig: {
-		APIKEY: "571752207151901|AC-zG86sv6U6kpnT0_snIHBOHJc"
+		"canvas": ""
 	}
 };
 
@@ -34,27 +30,51 @@ module.exports.makeRankCard = async (data) => {
 	const PI = Math.PI;
 
     const { id, name, rank, level, expCurrent, expNextLevel } = data;
-	
-	console.log(await global.utils.assets.font("REGULAR-FONT"));
 
-	Canvas.registerFont(await global.utils.assets.font("REGULAR-FONT"), {
+	Canvas.registerFont(__root + "/regular-font.ttf", {
 		family: "Manrope",
 		weight: "regular",
 		style: "normal"
 	});
-	Canvas.registerFont(await global.utils.assets.font("BOLD-FONT"), {
+	Canvas.registerFont(__root + "/bold-font.ttf", {
 		family: "Manrope",
 		weight: "bold",
 		style: "normal"
 	});
+//random rankcard by Siêu Đáng Yêu ,png by ngô đức hiển(xin vui lòng giữ credit)
+	const pathCustom = path.resolve(__dirname, "cache", "customrank");
+	var customDir = fs.readdirSync(pathCustom);
+	let random = Math.floor(Math.random() * 23) + 1;
+	    var dirImage = __root + "/rankcard" + random + ".png";
 
-	let rankCard = await Canvas.loadImage(await global.utils.assets.image("RANKCARD"));
+
+	customDir = customDir.map(item => item.replace(/\.png/g, ""));
+
+	for (singleLimit of customDir) {
+		var limitRate = false;
+		const split = singleLimit.split(/-/g);
+		var min = parseInt(split[0]), max = parseInt((split[1]) ? split[1] : min);
+	
+		for (; min <= max; min++) {
+			if (level == min) {
+				limitRate = true;
+				break;
+			}
+		}
+
+		if (limitRate == true) {
+			dirImage = pathCustom + `/${singleLimit}.png`;
+			break;
+		}
+	}
+
+	let rankCard = await Canvas.loadImage(dirImage);
 	const pathImg = __root + `/rank_${id}.png`;
 	
 	var expWidth = (expCurrent * 615) / expNextLevel;
 	if (expWidth > 615 - 18.5) expWidth = 615 - 18.5;
 	
-	let avatar = await request.get(`https://graph.facebook.com/${id}/picture?width=512&height=512&access_token=${global.configModule[this.config.name].APIKEY}`);
+	let avatar = await request.get(`https://graph.facebook.com/${id}/picture?width=512&height=512&access_token=170440784240186|bc82258eaaf93ee5b9f577a8d401bfc9`);
 
 	avatar = await this.circle(avatar.body);
 
@@ -131,27 +151,55 @@ module.exports.getInfo = async (uid, Currencies) => {
 	return { level, expCurrent, expNextLevel };
 }
 
-module.exports.languages = {
-	"vi": {
-		"userNotExist": "Bạn hiện không có trong cơ sở dữ liệu nên không thể thấy thứ hạng của mình, vui lòng thử lại sau 5 giây."
-	},
-	"en" :{
-		"userNotExist": "You are not currently in the database so you cannot see your rank, please try again in 5 seconds."
-	}
+module.exports.onLoad = async function () {
+	const { resolve } = global.nodemodule["path"];
+    const { existsSync, mkdirSync } = global.nodemodule["fs-extra"];
+    const { downloadFile } = global.utils;
+	const path = resolve(__dirname, "cache", "customrank");
+    if (!existsSync(path)) mkdirSync(path, { recursive: true });
+//hàm dowload file có sẵn bao gồm font chữ hoặc pang rankcard (có thể thay)
+    if (!existsSync(resolve(__dirname, 'cache', 'regular-font.ttf'))) await downloadFile("https://raw.githubusercontent.com/catalizcs/storage-data/master/rank/fonts/regular-font.ttf", resolve(__dirname, 'cache', 'regular-font.ttf'));
+	if (!existsSync(resolve(__dirname, 'cache', 'bold-font.ttf'))) await downloadFile("https://raw.githubusercontent.com/catalizcs/storage-data/master/rank/fonts/bold-font.ttf", resolve(__dirname, 'cache', 'bold-font.ttf'));
+	if (!existsSync(resolve(__dirname, 'cache', 'rankcard.png'))) await downloadFile("https://raw.githubusercontent.com/catalizcs/storage-data/master/rank/rank_card/rankcard.png", resolve(__dirname, 'cache', 'rankcard.png'));
+
 }
 
-module.exports.run = async ({ event, api, Currencies, Users, getText }) => {
-	const { createReadStream, unlinkSync } = global.nodemodule["fs-extra"];
+module.exports.run = async ({ event, api, args, Currencies, Users }) => {
+	const fs = global.nodemodule["fs-extra"];
 	
 	let dataAll = (await Currencies.getAll(["userID", "exp"]));
+	const mention = Object.keys(event.mentions);
 
-	dataAll.sort(function (a, b) { return b.exp - a.exp });
+	dataAll.sort((a, b) => {
+		if (a.exp > b.exp) return -1;
+		if (a.exp < b.exp) return 1;
+	});
 
-	const rank = dataAll.findIndex(item => parseInt(item.userID) == parseInt(event.senderID)) + 1;
-	if (rank == 0) return api.sendMessage(getText("userNotExist"), event.threadID, event.messageID);
-	const name = await Users.getNameUser(event.senderID);
-	const point = await this.getInfo(event.senderID, Currencies);
-	const timeStart = Date.now();
-	let pathRankCard = await this.makeRankCard({ id: event.senderID, name, rank, ...point })
-	return api.sendMessage({body: `${Date.now() - timeStart}`, attachment: createReadStream(pathRankCard, {'highWaterMark': 128 * 1024}) }, event.threadID, () => unlinkSync(pathRankCard), event.messageID);
+	if (args.length == 0) {
+		const rank = dataAll.findIndex(item => parseInt(item.userID) == parseInt(event.senderID)) + 1;
+		const name = global.data.userName.get(event.senderID) || await Users.getNameUser(event.senderID);
+		if (rank == 0) return api.sendMessage("Bạn hiện không có trong cơ sở dữ liệu nên không thể thấy thứ hạng của mình, vui lòng thử lại sau 5 giây.", event.threadID, event.messageID);
+		const point = await this.getInfo(event.senderID, Currencies);
+		const timeStart = Date.now();
+		let pathRankCard = await this.makeRankCard({ id: event.senderID, name, rank, ...point })
+		return api.sendMessage({body: `${Date.now() - timeStart}`, attachment: fs.createReadStream(pathRankCard, {'highWaterMark': 128 * 1024}) }, event.threadID, () => fs.unlinkSync(pathRankCard), event.messageID);
+	}
+	if (mention.length == 1) {
+		const rank = dataAll.findIndex(item => parseInt(item.userID) == parseInt(mention[0])) + 1;
+		const name = global.data.userName.get(mention[0]) || await Users.getNameUser(mention[0]);
+		if (rank == 0) return api.sendMessage("Bạn hiện không có trong cơ sở dữ liệu nên không thể thấy thứ hạng của mình, vui lòng thử lại sau 5 giây.", event.threadID, event.messageID);
+		let point = await this.getInfo(mention[0], Currencies);
+		let pathRankCard = await this.makeRankCard({ id: mention[0], name, rank, ...point })
+		return api.sendMessage({ attachment: fs.createReadStream(pathRankCard) }, event.threadID, () => fs.unlinkSync(pathRankCard), event.messageID);
+	}
+	if (mention.length > 1) {
+		for (const userID of mention) {
+			const rank = dataAll.findIndex(item => parseInt(item.userID) == parseInt(userID)) + 1;
+			const name = global.data.userName.get(userID) || await Users.getNameUser(userID);
+			if (rank == 0) return api.sendMessage("Bạn hiện không có trong cơ sở dữ liệu nên không thể thấy thứ hạng của mình, vui lòng thử lại sau 5 giây.", event.threadID, event.messageID);
+			let point = await this.getInfo(userID, Currencies);
+			let pathRankCard = await this.makeRankCard({ id: userID, name, rank, ...point })
+			return api.sendMessage({ attachment: fs.createReadStream(pathRankCard) }, event.threadID, () => fs.unlinkSync(pathRankCard), event.messageID);
+		}
+	}
 }
