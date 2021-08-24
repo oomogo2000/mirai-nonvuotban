@@ -357,7 +357,7 @@ module.exports.run = async({ event, api, args, Currencies, Users }) => {
         let pathRankCard = null
         await this.makeRankCardGif({ id: event.senderID, name, rank, ...point }).then((path) => {
             api.sendMessage({ body: `${Date.now() - timeStart}`, attachment: fs.createReadStream(path, { 'highWaterMark': 128 * 1024 }) }, event.threadID, () => {
-                fs.unlinkSync(pathRankCard)
+                fs.unlinkSync(path)
                 console.log("finally");
             }, event.messageID);
         })
