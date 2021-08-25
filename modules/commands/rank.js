@@ -14,7 +14,7 @@ module.exports.config = {
 		"canvas": ""
 	}
 };
-//random color 
+//random colorr
 function getRandomColor() {
   	var letters = '0123456789ABCDEF';
  	var color = '#';
