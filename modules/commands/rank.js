@@ -51,7 +51,6 @@ module.exports.makeRankCard = async (data) => {
 		style: "normal"
 	});
 //random rankcard by Siêu Đáng Yêu(xin vui lòng giữ credit)
-//sử dụng bao nhiêu cái chỉnh ở dòng 57 (số ảnh) và ảnh phải ở định dạng.png đặt tên rankcard(123)
 	const pathCustom = path.resolve(__dirname, "cache", "customrank");
 	var customDir = fs.readdirSync(pathCustom);
 	let random = Math.floor(Math.random() * 23) + 1;
