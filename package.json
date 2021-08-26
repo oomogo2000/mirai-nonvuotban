@@ -1,33 +1,14 @@
 {
     "name": "miraiBot",
-    "version": "1.2.15",
-    "description": "A simple Facebook Messenger Bot made by me(CatalizCS) and my brother SpermLord.",
+    "version": "2.0",
+    "description": "A simple Facebook Messenger Bot made by me(CatalizCS) and my brother SpermLord has been Modified by XXX.",
     "main": "mirai.js",
     "scripts": {
         "start": "node index",
         "login": "node login",
         "test": "node --trace-warnings --use_strict --async-stack-traces mirai"
     },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/miraipr0ject/miraiv2.git"
-    },
-    "keywords": [
-        "bot",
-        "facebook",
-        "projectmirai",
-        "messenger",
-        "mirai",
-        "catalizcs",
-        "spermlord",
-        "miraipr0ject"
-    ],
-    "author": "CatalizCS & SpermLord",
-    "license": "GPL-3.0",
-    "bugs": {
-        "url": "https://github.com/miraipr0ject/miraiv2/issues"
-    },
-    "homepage": "https://github.com/miraipr0ject/miraiv2#readme",
+    "keywords": [],
     "dependencies": {
         "@maihuybao/fca-unofficial": "",
         "@miraipr0ject/assets": "",
@@ -43,12 +24,14 @@
         "extract-zip": "",
         "figlet": "",
         "fs-extra": "",
+        "gif-encoder-2": "^1.0.5",
         "gif-frames": "",
         "gifencoder": "",
         "jimp": "",
         "minimist": "",
         "moment-timezone": "",
         "ms": "",
+        "nodemon": "^2.0.12",
         "npmlog": "",
         "path": "",
         "readline": "",

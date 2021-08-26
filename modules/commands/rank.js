@@ -14,6 +14,7 @@ module.exports.config = {
         "canvas": "",
         "gif-frames": "",
         "gifencoder": "",
+        "gif-encoder-2": "",
     }
 };
 //random color 
@@ -37,8 +38,7 @@ module.exports.makeRankCard = async(data) => {
     const path = global.nodemodule["path"];
     const Canvas = global.nodemodule["canvas"];
     const request = global.nodemodule["node-superfetch"];
-    const GIFEncoder = global.nodemodule["gifencoder"];
-    const gifFrames = global.nodemodule["gif-frames"];
+
 
     const __root = path.resolve(__dirname, "cache");
     const PI = Math.PI;
@@ -58,8 +58,13 @@ module.exports.makeRankCard = async(data) => {
     //sử dụng bao nhiêu cái chỉnh ở dòng 57 (số ảnh) và ảnh phải ở định dạng.png đặt tên rankcard(123)
     const pathCustom = path.resolve(__dirname, "cache", "customrank");
     var customDir = fs.readdirSync(pathCustom);
-    let random = Math.floor(Math.random() * 23) + 1;
-    var dirImage = __root + "/rankcard" + random + ".png";
+    let fileImageList = []
+    files.forEach(element => {
+        if (path.parse(element).ext == '.png' && path.parse(element).name.startsWith('rankcard')) {
+            fileImageList.push(path.parse(element).base)
+        };
+    })
+    var dirImage = __root + "/" + fileImageList[Math.floor(Math.random() * fileImageList.length)];
     customDir = customDir.map(item => item.replace(/\.png/g, ""));
 
     for (singleLimit of customDir) {
@@ -150,7 +155,7 @@ module.exports.makeRankCardGif = async(data) => {
     const path = global.nodemodule["path"];
     const Canvas = global.nodemodule["canvas"];
     const request = global.nodemodule["node-superfetch"];
-    const GIFEncoder = global.nodemodule["gifencoder"];
+    const GIFEncoder = global.nodemodule["gif-encoder-2"];
     const gifFrames = global.nodemodule["gif-frames"];
 
     const __root = path.resolve(__dirname, "cache");
@@ -171,7 +176,6 @@ module.exports.makeRankCardGif = async(data) => {
     //sử dụng bao nhiêu cái chỉnh ở dòng 57 (số ảnh) và ảnh phải ở định dạng.png đặt tên rankcard(123)
     const pathCustom = path.resolve(__dirname, "cache", "customrank");
     var customDir = fs.readdirSync(pathCustom);
-    let random = Math.floor(Math.random() * 23) + 1;
     // var dirImage = __root + "/rankcard" + random + ".png";
     var dirImage = __root + "/banner.gif";
     customDir = customDir.map(item => item.replace(/\.png/g, ""));
@@ -202,14 +206,16 @@ module.exports.makeRankCardGif = async(data) => {
     var expWidth = (expCurrent * 615) / expNextLevel;
     if (expWidth > 615 - 18.5) expWidth = 615 - 18.5;
 
-    async function canvasGIF({ url, path, width, height }) {
+    async function canvasGIF({ url, imagePath, width, height }) {
         const gifWidth = width;
         const gifHeight = height;
-        const encoder = new GIFEncoder(gifWidth, gifHeight);
+        const encoder = new GIFEncoder(gifWidth, gifHeight, 'neuquant', true);
+
         // stream the results as they are available into myanimated.gif
         encoder.start();
         encoder.setRepeat(0); // 0 for repeat, -1 for no-repeat
-        encoder.setDelay(100); // frame delay in ms
+        // frame delay in ms
+
         // // use node-canvas
         const canvas = Canvas.createCanvas(gifWidth, gifHeight);
         const ctx = canvas.getContext('2d');
@@ -219,70 +225,140 @@ module.exports.makeRankCardGif = async(data) => {
                     if (err) {
                         throw err;
                     }
-                    let count = 0;
-                    frameData.forEach(async function(frame, index) {
-                        let stream = await frame.getImage().pipe(fs.createWriteStream(
-                            __root + '/image-' + frame.frameIndex + '.png',
-                        ));
-                        stream.on('finish', async() => {
-                            this.count = count++;
-                            if (count == frameData.length) {
-                                for (let index = 0; index < count; index++) {
-                                    const gif = await Canvas.loadImage(__root + '/image-' + index + '.png');
-                                    ctx.drawImage(gif, 0, 0, canvas.width, canvas.height);
-                                    ctx.drawImage(await Canvas.loadImage(avatar), 45, 50, 180, 180);
+                    let frameCount = frameData.length;
+                    // console.log(frameCount);
+                    let imageName = path.parse(url).name
+                    let files = fs.readdirSync(__root + '/cachegif/');
+                    let isCached = 0;
+                    files.forEach(element => {
+                        if (element.toString().startsWith(imageName)) {
+                            isCached++;
+                        };
+                    })
+                    let jump = Math.floor(frameData.length / 10);
+                    encoder.setDelay(100 * jump);
 
-                                    ctx.font = `bold 36px Manrope`;
-                                    ctx.fillStyle = getRandomColor();
-                                    ctx.textAlign = "start";
-                                    ctx.fillText(name, 270, 164);
-                                    ctx.font = `36px Manrope`;
-                                    ctx.fillStyle = getRandomColor();
-                                    ctx.textAlign = "center";
+                    if (isCached == frameCount) {
+                        async function executedCachedImage() {
+                            for (let index = 0; index < frameCount; index = index + jump) {
+                                const gif = await Canvas.loadImage(__root + '/cachegif/' + imageName + '-' + index + '.png');
+                                ctx.drawImage(gif, 0, 0, canvas.width, canvas.height);
+                                ctx.drawImage(await Canvas.loadImage(avatar), 45, 50, 180, 180);
 
-                                    ctx.font = `bold 32px Manrope`;
-                                    ctx.fillStyle = getRandomColor();
-                                    ctx.textAlign = "end";
-                                    ctx.fillText(level, 934 - 55, 82);
-                                    ctx.fillStyle = getRandomColor();
-                                    ctx.fillText("Lv.", 934 - 55 - ctx.measureText(level).width - 10, 82);
+                                ctx.font = `bold 36px Manrope`;
+                                ctx.fillStyle = getRandomColor();
+                                ctx.textAlign = "start";
+                                ctx.fillText(name, 270, 164);
+                                ctx.font = `36px Manrope`;
+                                ctx.fillStyle = getRandomColor();
+                                ctx.textAlign = "center";
 
-                                    ctx.font = `bold 32px Manrope`;
-                                    ctx.fillStyle = getRandomColor();
-                                    ctx.textAlign = "end";
-                                    ctx.fillText(rank, 934 - 55 - ctx.measureText(level).width - 16 - ctx.measureText(`Lv.`).width - 25, 82);
-                                    ctx.fillStyle = getRandomColor();
-                                    ctx.fillText("#", 934 - 55 - ctx.measureText(level).width - 16 - ctx.measureText(`Lv.`).width - 16 - ctx.measureText(rank).width - 16, 82);
+                                ctx.font = `bold 32px Manrope`;
+                                ctx.fillStyle = getRandomColor();
+                                ctx.textAlign = "end";
+                                ctx.fillText(level, 934 - 55, 82);
+                                ctx.fillStyle = getRandomColor();
+                                ctx.fillText("Lv.", 934 - 55 - ctx.measureText(level).width - 10, 82);
 
-                                    ctx.font = `bold 26px Manrope`;
-                                    ctx.fillStyle = getRandomColor();
-                                    ctx.textAlign = "start";
-                                    ctx.fillText("/ " + expNextLevel, 710 + ctx.measureText(expCurrent).width + 10, 164);
-                                    ctx.fillStyle = getRandomColor();
-                                    ctx.fillText(expCurrent, 710, 164);
+                                ctx.font = `bold 32px Manrope`;
+                                ctx.fillStyle = getRandomColor();
+                                ctx.textAlign = "end";
+                                ctx.fillText(rank, 934 - 55 - ctx.measureText(level).width - 16 - ctx.measureText(`Lv.`).width - 25, 82);
+                                ctx.fillStyle = getRandomColor();
+                                ctx.fillText("#", 934 - 55 - ctx.measureText(level).width - 16 - ctx.measureText(`Lv.`).width - 16 - ctx.measureText(rank).width - 16, 82);
 
-                                    ctx.beginPath();
-                                    ctx.fillStyle = getRandomColor();
-                                    ctx.arc(257 + 18.5, 147.5 + 18.5 + 36.25, 18.5, 1.5 * PI, 0.5 * PI, true);
-                                    ctx.fill();
-                                    ctx.fillRect(257 + 18.5, 147.5 + 36.25, expWidth, 37.5);
-                                    ctx.arc(257 + 18.5 + expWidth, 147.5 + 18.5 + 36.25, 18.75, 1.5 * PI, 0.5 * PI, false);
-                                    ctx.fill();
+                                ctx.font = `bold 26px Manrope`;
+                                ctx.fillStyle = getRandomColor();
+                                ctx.textAlign = "start";
+                                ctx.fillText("/ " + expNextLevel, 710 + ctx.measureText(expCurrent).width + 10, 164);
+                                ctx.fillStyle = getRandomColor();
+                                ctx.fillText(expCurrent, 710, 164);
 
-                                    encoder.addFrame(ctx);
-                                    if (index === frameData.length - 1) {
-                                        let gifStream = await encoder.createReadStream().pipe(fs.createWriteStream(path));
-                                        encoder.finish();
-                                        gifStream.on('finish', async() => {
-                                            console.log('Gif Generated')
-                                            resolve(path);
-                                        })
-                                    }
+                                ctx.beginPath();
+                                ctx.fillStyle = getRandomColor();
+                                ctx.arc(257 + 18.5, 147.5 + 18.5 + 36.25, 18.5, 1.5 * PI, 0.5 * PI, true);
+                                ctx.fill();
+                                ctx.fillRect(257 + 18.5, 147.5 + 36.25, expWidth, 37.5);
+                                ctx.arc(257 + 18.5 + expWidth, 147.5 + 18.5 + 36.25, 18.75, 1.5 * PI, 0.5 * PI, false);
+                                ctx.fill();
+
+                                encoder.addFrame(ctx);
+                                if (index + jump > frameCount - 1) {
+                                    let gifStream = await encoder.createReadStream().pipe(fs.createWriteStream(imagePath));
+                                    encoder.finish();
+                                    gifStream.on('finish', async() => {
+                                        console.timeEnd('Gif Generated')
+                                        resolve(imagePath);
+                                    })
                                 }
                             }
+                        }
+                        executedCachedImage()
+                    } else {
+                        let count = 0;
+                        frameData.forEach(async function(frame, index) {
+                            let stream = await frame.getImage().pipe(fs.createWriteStream(
+                                __root + '/cachegif/' + imageName + '-' + frame.frameIndex + '.png',
+                            ));
+                            stream.on('finish', async() => {
+                                this.count = count++;
+                                if (count == frameData.length) {
+                                    for (let index = 0; index < count; index = index + jump) {
+                                        const gif = await Canvas.loadImage(__root + '/cachegif/' + imageName + '-' + index + '.png');
+                                        ctx.drawImage(gif, 0, 0, canvas.width, canvas.height);
+                                        ctx.drawImage(await Canvas.loadImage(avatar), 45, 50, 180, 180);
 
+                                        ctx.font = `bold 36px Manrope`;
+                                        ctx.fillStyle = getRandomColor();
+                                        ctx.textAlign = "start";
+                                        ctx.fillText(name, 270, 164);
+                                        ctx.font = `36px Manrope`;
+                                        ctx.fillStyle = getRandomColor();
+                                        ctx.textAlign = "center";
+
+                                        ctx.font = `bold 32px Manrope`;
+                                        ctx.fillStyle = getRandomColor();
+                                        ctx.textAlign = "end";
+                                        ctx.fillText(level, 934 - 55, 82);
+                                        ctx.fillStyle = getRandomColor();
+                                        ctx.fillText("Lv.", 934 - 55 - ctx.measureText(level).width - 10, 82);
+
+                                        ctx.font = `bold 32px Manrope`;
+                                        ctx.fillStyle = getRandomColor();
+                                        ctx.textAlign = "end";
+                                        ctx.fillText(rank, 934 - 55 - ctx.measureText(level).width - 16 - ctx.measureText(`Lv.`).width - 25, 82);
+                                        ctx.fillStyle = getRandomColor();
+                                        ctx.fillText("#", 934 - 55 - ctx.measureText(level).width - 16 - ctx.measureText(`Lv.`).width - 16 - ctx.measureText(rank).width - 16, 82);
+
+                                        ctx.font = `bold 26px Manrope`;
+                                        ctx.fillStyle = getRandomColor();
+                                        ctx.textAlign = "start";
+                                        ctx.fillText("/ " + expNextLevel, 710 + ctx.measureText(expCurrent).width + 10, 164);
+                                        ctx.fillStyle = getRandomColor();
+                                        ctx.fillText(expCurrent, 710, 164);
+
+                                        ctx.beginPath();
+                                        ctx.fillStyle = getRandomColor();
+                                        ctx.arc(257 + 18.5, 147.5 + 18.5 + 36.25, 18.5, 1.5 * PI, 0.5 * PI, true);
+                                        ctx.fill();
+                                        ctx.fillRect(257 + 18.5, 147.5 + 36.25, expWidth, 37.5);
+                                        ctx.arc(257 + 18.5 + expWidth, 147.5 + 18.5 + 36.25, 18.75, 1.5 * PI, 0.5 * PI, false);
+                                        ctx.fill();
+
+                                        encoder.addFrame(ctx);
+                                        if (index + jump > frameData.length - 1) {
+                                            let gifStream = await encoder.createReadStream().pipe(fs.createWriteStream(imagePath));
+                                            encoder.finish();
+                                            gifStream.on('finish', async() => {
+                                                resolve(imagePath);
+                                            })
+                                        }
+                                    }
+                                }
+
+                            });
                         });
-                    });
+                    }
                 }
             );
         })
@@ -292,7 +368,7 @@ module.exports.makeRankCardGif = async(data) => {
 
     return canvasGIF({
         url: dirImage,
-        path: __root + `/rank_${id}.gif`,
+        imagePath: __root + `/rank_${id}.gif`,
         width: 934,
         height: 282
     })
@@ -355,10 +431,11 @@ module.exports.run = async({ event, api, args, Currencies, Users }) => {
         const timeStart = Date.now();
         // let pathRankCard = await this.makeRankCard({ id: event.senderID, name, rank, ...point })
         let pathRankCard = null
+        console.time('Gif Generated')
         await this.makeRankCardGif({ id: event.senderID, name, rank, ...point }).then((path) => {
             api.sendMessage({ body: `${Date.now() - timeStart}`, attachment: fs.createReadStream(path, { 'highWaterMark': 128 * 1024 }) }, event.threadID, () => {
                 fs.unlinkSync(path)
-                console.log("finally");
+                console.timeLog('Gif Generated')
             }, event.messageID);
         })
     }
