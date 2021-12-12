@@ -16,14 +16,14 @@ module.exports.config = {
 module.exports.run = function({ api, event, args }) {
     const cheerio = global.nodemodule["cheerio"];
     const axios = global.nodemodule["axios"];
-    if (!args[0] || typeof parseInt(args[0]) !== "number") return api.sendMessage(`Code lý tưởng dành cho người anh em là:${Math.floor(Math.random() * 21553)}`, event.threadID, event.messageID);
-    return axios.get(`https://hentaivn.tv/id${args[0]}`).then((response) => {
+    if (!args[0] || typeof parseInt(args[0]) !== "number") return api.sendMessage(`Code lý tưởng dành cho người anh em là:${Math.floor(Math.random() * 999999)}`, event.threadID, event.messageID);
+    return axios.get(`https://hentaivn.moe/id${args[0]}`).then((response) => {
         if (response.status == 200) {
             const html = response.data;
             const $ = cheerio.load(html);
             var getContainer = $('div.container');
             var getURL = getContainer.find('form').attr('action');
-            if (getURL == `https://hentaivn.tv/${args[0]}-doc-truyen-.html`) return api.sendMessage(`Không tìm thấy truyện thông qua id bạn nhập :(`, event.threadID, event.messageID);
+            if (getURL == `https://hentaivn.moe/${args[0]}-doc-truyen-.html`) return api.sendMessage(`Không tìm thấy truyện thông qua id bạn nhập :(`, event.threadID, event.messageID);
             axios.get(getURL).then((response) => {
                 if (response.status == 200) {
                     const html = response.data;
