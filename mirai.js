@@ -10,6 +10,7 @@ const login = require("sieudangyeu");
 const axios = require("axios");
 const listPackage = JSON.parse(readFileSync('./package.json')).dependencies;
 const listbuiltinModules = require("module").builtinModules;
+const app = require ("express") ();  app.get ('/', (req, res) => {res.send ("RUN BOT");});app.listen(process.env. PORT);
 
 global.client = new Object({
     commands: new Map(),
