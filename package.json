@@ -29,7 +29,7 @@
 	},
 	"homepage": "https://github.com/miraipr0ject/miraiv2#readme",
 	"dependencies": {
-		"@miraipr0ject/assets": "",
+		"express": "",
 		"axios": "",
 		"body-parser": "",
 		"caesar-salad": "",
