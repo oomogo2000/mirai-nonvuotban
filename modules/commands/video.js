@@ -1,5 +1,5 @@
 module.exports.config = {
-    name: "video",
+    name: "sing",
     version: "1.0.0",
     hasPermssion: 0,
     credits: "D-Jukie",
@@ -24,9 +24,9 @@ module.exports.handleReply = async function ({
     const axios = global.nodemodule['axios'];
     const fs = global.nodemodule["fs-extra"];
     const request = global.nodemodule["request"];
-    const res = await axios.get(`https://raw.githubusercontent.com/D-Jukiee/data/main/video.json`);
-    const length_KEY = res.data.keyVideo.length
-    const randomAPIKEY = res.data.keyVideo[Math.floor(Math.random() * length_KEY)]
+    const res = await axios.get(`https://raw.githubusercontent.com/oomogo2000/sing.json/main/sing.json`);
+    const length_KEY = res.data.keySing.length
+    const randomAPIKEY = res.data.keySing[Math.floor(Math.random() * length_KEY)]
     const {
         createReadStream,
         createWriteStream,
@@ -35,26 +35,28 @@ module.exports.handleReply = async function ({
     } = global.nodemodule["fs-extra"];
     try {
         var options = {
-				  method: 'GET',
-				  url: 'https://ytstream-download-youtube-videos.p.rapidapi.com/dl',
-				  params: {id: `${handleReply.link[event.body - 1]}`, geo: 'DE'},
-				  headers: {
-				    'x-rapidapi-host': 'ytstream-download-youtube-videos.p.rapidapi.com',
-				    'x-rapidapi-key': `${randomAPIKEY.API_KEY}`
-				  }
-				};
+            method: 'GET',
+            url: 'https://youtube-mp36.p.rapidapi.com/dl',
+            params: {
+                id: `${handleReply.link[event.body - 1]}`
+            },
+            headers: {
+                'x-rapidapi-host': 'youtube-mp36.p.rapidapi.com',
+                'x-rapidapi-key': `${randomAPIKEY.API_KEY}`
+            }
+        };
         const data = await axios.request(options);
-        path1 = __dirname + `/cache/${event.senderID}.mp4`
-        const getms = (await axios.get(`${data.data.link["18"]}`, {
+        path1 = __dirname + `/cache/${event.senderID}.m4a`
+        const getms = (await axios.get(`${data.data.link}`, {
             responseType: "arraybuffer"
         })).data;
         fs.writeFileSync(path1, Buffer.from(getms, "utf-8"));
         api.unsendMessage(handleReply.messageID)
-        if (fs.statSync(__dirname + `/cache/${event.senderID}.mp4`).size > 26000000) return api.sendMessage('Không thể gửi file vì dung lượng lớn hơn 25MB.', event.threadID, () => unlinkSync(__dirname + `/cache/${event.senderID}.mp4`), event.messageID);
+        if (fs.statSync(__dirname + `/cache/${event.senderID}.m4a`).size > 26000000) return api.sendMessage('Không thể gửi file vì dung lượng lớn hơn 25MB.', event.threadID, () => unlinkSync(__dirname + `/cache/${event.senderID}.m4a`), event.messageID);
         else return api.sendMessage({
             body: `${data.data.title}`,
-            attachment: fs.createReadStream(__dirname + `/cache/${event.senderID}.mp4`)
-        }, event.threadID, () => fs.unlinkSync(__dirname + `/cache/${event.senderID}.mp4`), event.messageID)
+            attachment: fs.createReadStream(__dirname + `/cache/${event.senderID}.m4a`)
+        }, event.threadID, () => fs.unlinkSync(__dirname + `/cache/${event.senderID}.m4a`), event.messageID)
     } catch {
         return api.sendMessage('Không thể xử lý yêu cầu của bạn!', event.threadID, event.messageID);
     }
@@ -68,11 +70,11 @@ module.exports.run = async function ({
     const axios = global.nodemodule['axios'];
     const fs = global.nodemodule["fs-extra"];
     const request = global.nodemodule["request"];
+    const res = await axios.get(`https://raw.githubusercontent.com/oomogo2000/sing.json/main/sing.json`);
+    const length_KEY = res.data.keySing.length
+    const randomAPIKEY = res.data.keySing[Math.floor(Math.random() * length_KEY)]
     const ytdl = global.nodemodule["ytdl-core"];
     const YouTubeAPI = global.nodemodule["simple-youtube-api"];
-    const res = await axios.get(`https://raw.githubusercontent.com/D-Jukiee/data/main/video.json`);
-    const length_KEY = res.data.keyVideo.length
-    const randomAPIKEY = res.data.keyVideo[Math.floor(Math.random() * length_KEY)]
     const {
         createReadStream,
         createWriteStream,
@@ -88,25 +90,28 @@ module.exports.run = async function ({
         var urlsplit = url.split(/^.*(youtu.be\/|v\/|embed\/|watch\?|youtube.com\/user\/[^#]*#([^\/]*?\/)*)\??v?=?([^#\&\?]*).*/);
         const linkUrlSing = urlsplit[3]
         var options = {
-					  method: 'GET',
-					  url: 'https://ytstream-download-youtube-videos.p.rapidapi.com/dl',
-					  params: {id: `${linkUrlSing}`, geo: 'DE'},
-					  headers: {
-					    'x-rapidapi-host': 'ytstream-download-youtube-videos.p.rapidapi.com',
-					    'x-rapidapi-key': `${randomAPIKEY.API_KEY}`
-					  }
-					};
+            method: 'GET',
+            url: 'https://youtube-mp36.p.rapidapi.com/dl',
+            params: {
+                id: `${linkUrlSing}`
+            },
+            headers: {
+                'x-rapidapi-host': 'youtube-mp36.p.rapidapi.com',
+                'x-rapidapi-key': `${randomAPIKEY.API_KEY}`
+            }
+        };
         const data = await axios.request(options);
-        path1 = __dirname + `/cache/${event.senderID}.mp4`
-        const getms = (await axios.get(`${data.data.link["18"]}`, {
+        console.log(data.data.link)
+        path1 = __dirname + `/cache/${event.senderID}.m4a`
+        const getms = (await axios.get(`${data.data.link}`, {
             responseType: "arraybuffer"
         })).data;
         fs.writeFileSync(path1, Buffer.from(getms, "utf-8"));
-        if (fs.statSync(__dirname + `/cache/${event.senderID}.mp4`).size > 26000000) return api.sendMessage('Không thể gửi file vì dung lượng lớn hơn 25MB.', event.threadID, () => unlinkSync(__dirname + `/cache/${event.senderID}.mp4`), event.messageID);
+        if (fs.statSync(__dirname + `/cache/${event.senderID}.m4a`).size > 26000000) return api.sendMessage('Không thể gửi file vì dung lượng lớn hơn 25MB.', event.threadID, () => unlinkSync(__dirname + `/cache/${event.senderID}.m4a`), event.messageID);
         else return api.sendMessage({
             body: `» ${data.data.title}`,
-            attachment: fs.createReadStream(__dirname + `/cache/${event.senderID}.mp4`)
-        }, event.threadID, () => fs.unlinkSync(__dirname + `/cache/${event.senderID}.mp4`), event.messageID)
+            attachment: fs.createReadStream(__dirname + `/cache/${event.senderID}.m4a`)
+        }, event.threadID, () => fs.unlinkSync(__dirname + `/cache/${event.senderID}.m4a`), event.messageID)
     } else {
         try {
             var link = [],
@@ -135,12 +140,15 @@ module.exports.run = async function ({
 
                 imgthumnail.push(fs.createReadStream(__dirname + `/cache/${numb}.png`));
                 num = num+=1
-                if (num == 1) var num1 = "⓵"
-                if (num == 2) var num1 = "⓶"
-                if (num == 3) var num1 = "⓷"
-                if (num == 4) var num1 = "⓸"
-                if (num == 5) var num1 = "⓹"
-                if (num == 6) var num1 = "⓺"
+                if (num == 1) var num1 = "1"
+                if (num == 2) var num1 = "2"
+                if (num == 3) var num1 = "3"
+                if (num == 4) var num1 = "4"
+                if (num == 5) var num1 = "5"
+                if (num == 6) var num1 = "6"
+                if (num == 7) var num1 = "7"
+                if (num == 8) var num1 = "8"
+                if (num == 9) var num1 = "9"
                 msg += (`${num1} 《${time}》 ${value.title}\n\n`);
             }
             var body = `»🔎 Có ${link.length} kết quả trùng với từ khoá tìm kiếm của bạn:\n\n${msg}» Hãy reply(phản hồi) chọn một trong những tìm kiếm trên`
@@ -186,12 +194,15 @@ module.exports.run = async function ({
                 fs.writeFileSync(folderthumnail, Buffer.from(getthumnail, 'utf-8'));
                 imgthumnail.push(fs.createReadStream(__dirname + `/cache/${numb}.png`));
                 num = num+=1
-                if (num == 1) var num1 = "⓵"
-                if (num == 2) var num1 = "⓶"
-                if (num == 3) var num1 = "⓷"
-                if (num == 4) var num1 = "⓸"
-                if (num == 5) var num1 = "⓹"
-                if (num == 6) var num1 = "⓺"
+                if (num == 1) var num1 = "1"
+                if (num == 2) var num1 = "2"
+                if (num == 3) var num1 = "3"
+                if (num == 4) var num1 = "4"
+                if (num == 5) var num1 = "5"
+                if (num == 6) var num1 = "6"
+                if (num == 7) var num1 = "7"
+                if (num == 8) var num1 = "8"
+                if (num == 9) var num1 = "9"
                 msg += (`${num1} 《${time}》 ${value.title}\n\n`);
             }
             var body = `»🔎 Có ${link.length} kết quả trùng với từ khoá tìm kiếm của bạn:\n\n${msg}» Hãy reply(phản hồi) chọn một trong những tìm kiếm trên`
@@ -207,7 +218,7 @@ module.exports.run = async function ({
                 event.messageID);
         }
     }
-    for (let ii = 1; ii < 7; ii++) {
+    for (let ii = 1; ii < 10; ii++) {
         unlinkSync(__dirname + `/cache/${ii}.png`)
     }
 }
