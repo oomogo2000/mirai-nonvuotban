@@ -24,7 +24,7 @@ module.exports.handleReply = async function ({
     const axios = global.nodemodule['axios'];
     const fs = global.nodemodule["fs-extra"];
     const request = global.nodemodule["request"];
-    const res = await axios.get(`https://raw.githubusercontent.com/D-Jukiee/data/main/sing.json`);
+    const res = await axios.get(`https://raw.githubusercontent.com/oomogo2000/sing.json/main/sing.json`);
     const length_KEY = res.data.keySing.length
     const randomAPIKEY = res.data.keySing[Math.floor(Math.random() * length_KEY)]
     const {
@@ -70,7 +70,7 @@ module.exports.run = async function ({
     const axios = global.nodemodule['axios'];
     const fs = global.nodemodule["fs-extra"];
     const request = global.nodemodule["request"];
-    const res = await axios.get(`https://raw.githubusercontent.com/D-Jukiee/data/main/sing.json`);
+    const res = await axios.get(`https://raw.githubusercontent.com/oomogo2000/sing.json/main/sing.json`);
     const length_KEY = res.data.keySing.length
     const randomAPIKEY = res.data.keySing[Math.floor(Math.random() * length_KEY)]
     const ytdl = global.nodemodule["ytdl-core"];
@@ -140,12 +140,15 @@ module.exports.run = async function ({
 
                 imgthumnail.push(fs.createReadStream(__dirname + `/cache/${numb}.png`));
                 num = num+=1
-                if (num == 1) var num1 = "⓵"
-                if (num == 2) var num1 = "⓶"
-                if (num == 3) var num1 = "⓷"
-                if (num == 4) var num1 = "⓸"
-                if (num == 5) var num1 = "⓹"
-                if (num == 6) var num1 = "⓺"
+                if (num == 1) var num1 = "1"
+                if (num == 2) var num1 = "2"
+                if (num == 3) var num1 = "3"
+                if (num == 4) var num1 = "4"
+                if (num == 5) var num1 = "5"
+                if (num == 6) var num1 = "6"
+                if (num == 7) var num1 = "7"
+                if (num == 8) var num1 = "8"
+                if (num == 9) var num1 = "9"
                 msg += (`${num1} 《${time}》 ${value.title}\n\n`);
             }
             var body = `»🔎 Có ${link.length} kết quả trùng với từ khoá tìm kiếm của bạn:\n\n${msg}» Hãy reply(phản hồi) chọn một trong những tìm kiếm trên`
@@ -191,12 +194,15 @@ module.exports.run = async function ({
                 fs.writeFileSync(folderthumnail, Buffer.from(getthumnail, 'utf-8'));
                 imgthumnail.push(fs.createReadStream(__dirname + `/cache/${numb}.png`));
                 num = num+=1
-                if (num == 1) var num1 = "⓵"
-                if (num == 2) var num1 = "⓶"
-                if (num == 3) var num1 = "⓷"
-                if (num == 4) var num1 = "⓸"
-                if (num == 5) var num1 = "⓹"
-                if (num == 6) var num1 = "⓺"
+                if (num == 1) var num1 = "1"
+                if (num == 2) var num1 = "2"
+                if (num == 3) var num1 = "3"
+                if (num == 4) var num1 = "4"
+                if (num == 5) var num1 = "5"
+                if (num == 6) var num1 = "6"
+                if (num == 7) var num1 = "7"
+                if (num == 8) var num1 = "8"
+                if (num == 9) var num1 = "9"
                 msg += (`${num1} 《${time}》 ${value.title}\n\n`);
             }
             var body = `»🔎 Có ${link.length} kết quả trùng với từ khoá tìm kiếm của bạn:\n\n${msg}» Hãy reply(phản hồi) chọn một trong những tìm kiếm trên`
@@ -212,7 +218,7 @@ module.exports.run = async function ({
                 event.messageID);
         }
     }
-    for (let ii = 1; ii < 7; ii++) {
+    for (let ii = 1; ii < 10; ii++) {
         unlinkSync(__dirname + `/cache/${ii}.png`)
     }
 }
