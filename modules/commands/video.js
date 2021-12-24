@@ -1,5 +1,5 @@
 module.exports.config = {
-    name: "sing",
+    name: "video",
     version: "1.0.0",
     hasPermssion: 0,
     credits: "D-Jukie",
@@ -24,9 +24,9 @@ module.exports.handleReply = async function ({
     const axios = global.nodemodule['axios'];
     const fs = global.nodemodule["fs-extra"];
     const request = global.nodemodule["request"];
-    const res = await axios.get(`https://raw.githubusercontent.com/oomogo2000/sing.json/main/sing.json`);
-    const length_KEY = res.data.keySing.length
-    const randomAPIKEY = res.data.keySing[Math.floor(Math.random() * length_KEY)]
+    const res = await axios.get(`https://raw.githubusercontent.com/oomogo2000/sing.json/main/video.json`);
+    const length_KEY = res.data.keyVideo.length
+    const randomAPIKEY = res.data.keyVideo[Math.floor(Math.random() * length_KEY)]
     const {
         createReadStream,
         createWriteStream,
@@ -35,28 +35,26 @@ module.exports.handleReply = async function ({
     } = global.nodemodule["fs-extra"];
     try {
         var options = {
-            method: 'GET',
-            url: 'https://youtube-mp36.p.rapidapi.com/dl',
-            params: {
-                id: `${handleReply.link[event.body - 1]}`
-            },
-            headers: {
-                'x-rapidapi-host': 'youtube-mp36.p.rapidapi.com',
-                'x-rapidapi-key': `${randomAPIKEY.API_KEY}`
-            }
-        };
+				  method: 'GET',
+				  url: 'https://ytstream-download-youtube-videos.p.rapidapi.com/dl',
+				  params: {id: `${handleReply.link[event.body - 1]}`, geo: 'DE'},
+				  headers: {
+				    'x-rapidapi-host': 'ytstream-download-youtube-videos.p.rapidapi.com',
+				    'x-rapidapi-key': `${randomAPIKEY.API_KEY}`
+				  }
+				};
         const data = await axios.request(options);
-        path1 = __dirname + `/cache/${event.senderID}.m4a`
-        const getms = (await axios.get(`${data.data.link}`, {
+        path1 = __dirname + `/cache/${event.senderID}.mp4`
+        const getms = (await axios.get(`${data.data.link["18"]}`, {
             responseType: "arraybuffer"
         })).data;
         fs.writeFileSync(path1, Buffer.from(getms, "utf-8"));
         api.unsendMessage(handleReply.messageID)
-        if (fs.statSync(__dirname + `/cache/${event.senderID}.m4a`).size > 26000000) return api.sendMessage('Không thể gửi file vì dung lượng lớn hơn 25MB.', event.threadID, () => unlinkSync(__dirname + `/cache/${event.senderID}.m4a`), event.messageID);
+        if (fs.statSync(__dirname + `/cache/${event.senderID}.mp4`).size > 26000000) return api.sendMessage('Không thể gửi file vì dung lượng lớn hơn 25MB.', event.threadID, () => unlinkSync(__dirname + `/cache/${event.senderID}.mp4`), event.messageID);
         else return api.sendMessage({
             body: `${data.data.title}`,
-            attachment: fs.createReadStream(__dirname + `/cache/${event.senderID}.m4a`)
-        }, event.threadID, () => fs.unlinkSync(__dirname + `/cache/${event.senderID}.m4a`), event.messageID)
+            attachment: fs.createReadStream(__dirname + `/cache/${event.senderID}.mp4`)
+        }, event.threadID, () => fs.unlinkSync(__dirname + `/cache/${event.senderID}.mp4`), event.messageID)
     } catch {
         return api.sendMessage('Không thể xử lý yêu cầu của bạn!', event.threadID, event.messageID);
     }
@@ -70,11 +68,11 @@ module.exports.run = async function ({
     const axios = global.nodemodule['axios'];
     const fs = global.nodemodule["fs-extra"];
     const request = global.nodemodule["request"];
-    const res = await axios.get(`https://raw.githubusercontent.com/oomogo2000/sing.json/main/sing.json`);
-    const length_KEY = res.data.keySing.length
-    const randomAPIKEY = res.data.keySing[Math.floor(Math.random() * length_KEY)]
     const ytdl = global.nodemodule["ytdl-core"];
     const YouTubeAPI = global.nodemodule["simple-youtube-api"];
+    const res = await axios.get(`https://raw.githubusercontent.com/oomogo2000/sing.json/main/video.json`);
+    const length_KEY = res.data.keyVideo.length
+    const randomAPIKEY = res.data.keyVideo[Math.floor(Math.random() * length_KEY)]
     const {
         createReadStream,
         createWriteStream,
@@ -90,28 +88,25 @@ module.exports.run = async function ({
         var urlsplit = url.split(/^.*(youtu.be\/|v\/|embed\/|watch\?|youtube.com\/user\/[^#]*#([^\/]*?\/)*)\??v?=?([^#\&\?]*).*/);
         const linkUrlSing = urlsplit[3]
         var options = {
-            method: 'GET',
-            url: 'https://youtube-mp36.p.rapidapi.com/dl',
-            params: {
-                id: `${linkUrlSing}`
-            },
-            headers: {
-                'x-rapidapi-host': 'youtube-mp36.p.rapidapi.com',
-                'x-rapidapi-key': `${randomAPIKEY.API_KEY}`
-            }
-        };
+					  method: 'GET',
+					  url: 'https://ytstream-download-youtube-videos.p.rapidapi.com/dl',
+					  params: {id: `${linkUrlSing}`, geo: 'DE'},
+					  headers: {
+					    'x-rapidapi-host': 'ytstream-download-youtube-videos.p.rapidapi.com',
+					    'x-rapidapi-key': `${randomAPIKEY.API_KEY}`
+					  }
+					};
         const data = await axios.request(options);
-        console.log(data.data.link)
-        path1 = __dirname + `/cache/${event.senderID}.m4a`
-        const getms = (await axios.get(`${data.data.link}`, {
+        path1 = __dirname + `/cache/${event.senderID}.mp4`
+        const getms = (await axios.get(`${data.data.link["18"]}`, {
             responseType: "arraybuffer"
         })).data;
         fs.writeFileSync(path1, Buffer.from(getms, "utf-8"));
-        if (fs.statSync(__dirname + `/cache/${event.senderID}.m4a`).size > 26000000) return api.sendMessage('Không thể gửi file vì dung lượng lớn hơn 25MB.', event.threadID, () => unlinkSync(__dirname + `/cache/${event.senderID}.m4a`), event.messageID);
+        if (fs.statSync(__dirname + `/cache/${event.senderID}.mp4`).size > 26000000) return api.sendMessage('Không thể gửi file vì dung lượng lớn hơn 25MB.', event.threadID, () => unlinkSync(__dirname + `/cache/${event.senderID}.mp4`), event.messageID);
         else return api.sendMessage({
             body: `» ${data.data.title}`,
-            attachment: fs.createReadStream(__dirname + `/cache/${event.senderID}.m4a`)
-        }, event.threadID, () => fs.unlinkSync(__dirname + `/cache/${event.senderID}.m4a`), event.messageID)
+            attachment: fs.createReadStream(__dirname + `/cache/${event.senderID}.mp4`)
+        }, event.threadID, () => fs.unlinkSync(__dirname + `/cache/${event.senderID}.mp4`), event.messageID)
     } else {
         try {
             var link = [],
@@ -119,7 +114,7 @@ module.exports.run = async function ({
                 num = 0,
                 numb = 0;
             var imgthumnail = [];
-            var results = await youtube.searchVideos(keywordSearch, 6);
+            var results = await youtube.searchVideos(keywordSearch, 9);
             for (let value of results) {
                 if (typeof value.id == 'undefined') return;
                 link.push(value.id);
@@ -171,7 +166,7 @@ module.exports.run = async function ({
                 num = 0,
                 numb = 0;
             var imgthumnail = []
-            var results = await youtube.searchVideos(keywordSearch, 6);
+            var results = await youtube.searchVideos(keywordSearch, 9);
             for (let value of results) {
                 if (typeof value.id == 'undefined') return;
                 link.push(value.id);
