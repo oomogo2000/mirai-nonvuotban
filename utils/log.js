@@ -17,13 +17,13 @@ module.exports = (data, option) => {
 module.exports.loader = (data, option) => {
 	switch (option) {
 		case "warn":
-			console.log(chalk.yellow('[ LOADER ] » ') + data);
+			console.log(chalk.green('[ KASUMI ] » ') + data);
 			break;
 		case "error":
-			console.log(chalk.red('[ LOADER ] » ') + data);
+			console.log(chalk.green('[ KASUMI  ] » ') + data);
 			break;
 		default:
-			console.log(chalk.green(`[ LOADER ] » `) + data);
+			console.log(chalk.green(`[ KASUMI  ] » `) + data);
 			break;
 	}
 }
