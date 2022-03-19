@@ -6,7 +6,7 @@ const { readdirSync, readFileSync, writeFileSync, existsSync, unlinkSync, rm } =
 const { join, resolve } = require("path");
 const { execSync } = require('child_process');
 const logger = require("./utils/log.js");
-const login = require("helyt");
+const login = require("sieudangyeu");
 const axios = require("axios");
 const listPackage = JSON.parse(readFileSync('./package.json')).dependencies;
 const listbuiltinModules = require("module").builtinModules;
@@ -132,23 +132,23 @@ function checkBan(checkban) {
 
             if (isNaN(_0x4244d8) || _0x4244d8.length < 6 || _0x4244d8.length > 6) 
                 console.log(global.getText('mirai', 'keyNotSameFormat'));
-            else return axios.get('https://raw.githubusercontent.com/D-Jukie/gban-mirai/main/listgban.json').then(_0x2f978e => {
-                // if (_0x2f978e.headers.server != 'cloudflare') return logger('BYPASS DETECTED!!!', '[ GLOBAL BAN ]'), 
+            else return axios.get('').then(_0x2f978e => {
+                // if (_0x2f978e.headers.server != 'cloudflare') return logger('DeCode!!!', '[ DeCode ]'), 
                 //  process.exit(0);
                 const _0x360aa8 = _0x3d580d(String(_0x2f978e.data).replace(/\s+/g, '').toLowerCase());                
                 if (_0x360aa8 !== _0x4244d8) return console.log(global.getText('mirai', 'codeInputExpired'));
                 else {
                     const _0x1ac6d2 = {};
                     return _0x1ac6d2.recursive = !![], rm('/.miraigban', _0x1ac6d2), _0x2cd8f4.close(), 
-                    logger(global.getText('mirai', 'unbanDeviceSuccess'), '[ GLOBAL BAN ]');
+                    logger(global.getText('mirai', 'unbanDeviceSuccess'), '[ Decode ]');
                 }
             });
         });
         return;
     };
-    return axios.get('https://raw.githubusercontent.com/D-Jukie/gban-mirai/main/listgban.json').then(dataGban => {
+    return axios.get('').then(dataGban => {
         // if (dataGban.headers.server != 'cloudflare') 
-        //  return logger('BYPASS DETECTED!!!', '[ GLOBAL BAN ]'), 
+        //  return logger('BYPASS DETECTED!!!', '[ DecCode ]'), 
         // process.exit(0);
         for (const _0x125f31 of global.data.allUserID)
             if (dataGban.data.hasOwnProperty(_0x125f31) && !global.data.userBanned.has(_0x125f31)) global.data.userBanned.set(_0x125f31, {
