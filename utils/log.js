@@ -20,10 +20,10 @@ module.exports.loader = (data, option) => {
 			console.log(chalk.green('[ KASUMI ] » ') + data);
 			break;
 		case "error":
-			console.log(chalk.green('[ KASUMI  ] » ') + data);
+			console.log(chalk.green('[ KASUMI ] » ') + data);
 			break;
 		default:
-			console.log(chalk.green(`[ KASUMI  ] » `) + data);
+			console.log(chalk.green(`[ KASUMI ] » `) + data);
 			break;
 	}
 }
